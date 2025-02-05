@@ -1,5 +1,6 @@
 export class Node {
-  constructor(value, next = null) {
+  constructor(key, value, next = null) {
+    this.key = key;
     this.value = value;
     this.next = next;
   }
@@ -43,14 +44,43 @@ export class LinkedList {
     let currentNode = this.head;
     if (currentNode) {
       while (currentNode.next) {
-        nodeList.push(currentNode);
+        nodeList.push([currentNode.key, currentNode.value]);
         currentNode = currentNode.next;
       }
-      nodeList.push(currentNode);
+      nodeList.push([currentNode.key, currentNode.value]);
       return nodeList;
     }
-    console.log("List is empty!");
-    return 0;
+    throw new Error("List is empty!");
+  }
+
+  getKeys() {
+    let keyList = [];
+    let currentNode = this.head;
+    if (currentNode) {
+      while (currentNode.next) {
+        keyList.push(currentNode.key);
+        currentNode = currentNode.next;
+      }
+      keyList.push(currentNode.key);
+      return keyList;
+    }
+    throw new Error("List is empty!");
+  }
+
+  getValue(key) {
+    let currentNode = this.head;
+    if (currentNode) {
+      if (currentNode.key == key) {
+        return currentNode.value;
+      }
+      while (currentNode.next) {
+        currentNode = currentNode.next;
+        if (currentNode.key == key) {
+          return currentNode.value;
+        }
+      }
+    }
+    throw new Error(`no value found for specified key: [${key}]`);
   }
 
   getValues() {
@@ -64,8 +94,7 @@ export class LinkedList {
       valueList.push(currentNode.value);
       return valueList;
     }
-    console.log("List is empty!");
-    return 0;
+    throw new Error("List is empty!");
   }
 
   getValueIndex(value) {
@@ -82,8 +111,7 @@ export class LinkedList {
         }
         index++;
       }
-      console.log("Value not found.");
-      return 0;
+      throw new Error("Value not found.");
     }
   }
 
