@@ -1,7 +1,8 @@
 export class Node {
-  constructor(key, value, next = null) {
+  constructor(key, value, next = null, prev = null) {
     this.key = key;
     this.value = value;
+    this.prev = prev;
     this.next = next;
   }
 }
@@ -23,6 +24,7 @@ export class LinkedList {
         currentNode = currentNode.next;
       }
       currentNode.next = node;
+      node.prev = currentNode;
       return 1;
     }
     this.head = node;
@@ -51,6 +53,22 @@ export class LinkedList {
       return nodeList;
     }
     throw new Error("List is empty!");
+  }
+
+  hasKey(key) {
+    let currentNode = this.head;
+    if (currentNode) {
+      if (currentNode.key == key) {
+        return 1;
+      }
+      while (currentNode.next) {
+        currentNode = currentNode.next;
+        if (currentNode.key == key) {
+          return 1;
+        }
+      }
+    }
+    return 0;
   }
 
   getKeys() {
@@ -115,7 +133,59 @@ export class LinkedList {
     }
   }
 
+  removeByKey(key) {
+    let currentNode = this.head;
+    if (currentNode) {
+      if (currentNode.key == key && currentNode.next != null) {
+        this.head = currentNode.next;
+        this.head.prev = null;
+        return 1;
+      }
+      if (currentNode.key == key && currentNode.next == null) {
+        this.clear();
+        return 1;
+      }
+      while (currentNode.next) {
+        currentNode = currentNode.next;
+        if (currentNode.key == key && currentNode.next != null) {
+          currentNode.prev.next = currentNode.next;
+          currentNode.next.prev = currentNode.prev;
+          return 1;
+        }
+        if (currentNode.key == key && currentNode.next == null) {
+          currentNode.prev.next = null;
+          return 1;
+        }
+      }
+    }
+    throw new Error(`Key (${key}) not found.`);
+  }
+
+  removeByIndex(index) {
+    let currentNode = this.head;
+    let listLength = this.getList().length;
+    if (index < 0 || index > listLength - 1 || typeof index != "number") {
+      throw new Error(
+        `Invalid index. Must be a number between '0' and '${listLength - 1}'`,
+      );
+    }
+    if (currentNode) {
+      if (index == 0) {
+        this.head = currentNode.next;
+        this.head.prev = null;
+        return 1;
+      }
+      for (let i = 1; i <= index; i++) {
+        currentNode = currentNode.next;
+      }
+      currentNode.prev.next = currentNode.next;
+      currentNode.next.prev = currentNode.prev;
+      return 1;
+    }
+  }
+
   clear() {
     this.head = null;
+    return 1;
   }
 }
